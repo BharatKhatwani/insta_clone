@@ -11,25 +11,29 @@ function Signup() {
 
   const navigate = useNavigate();
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+ const handleSignup = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
 
-    try {
-      await axios.post("http://localhost:5000/api/auth/signup", {
-        username,
-        email,
-        password,
-      });
+  try {
+    const res = await axios.post("http://localhost:5000/api/auth/signup", {
+      username,
+      email,
+      password,
+    });
 
-      navigate("/home");
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Signup failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+    
+    localStorage.setItem("token", res.data.token);
+
+    navigate("/home");
+  } catch (err: any) {
+    setError(err.response?.data?.message || "Signup failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen w-full relative font-mono">
@@ -109,7 +113,7 @@ function Signup() {
           
           <div className="mt-4 rounded-lg border border-dashed border-gray-400 p-3 text-sm text-gray-700">
             <p className="font-semibold mb-1">Demo User</p>
-            <p>Email: <span className="font-mono">bharat@test.com</span></p>
+            <p>Email: <span className="font-mono">rahul@test.com</span></p>
             <p>Password: <span className="font-mono">123456</span></p>
           </div>
         </div>
