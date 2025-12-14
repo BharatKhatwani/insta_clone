@@ -1,7 +1,9 @@
 import { Router, Request, Response } from "express";
 import { authMiddleware } from "../authMiddleware";
 import Follow from "../model/follow_model";
-import Post from "../model/post_model";
+import Post, { IPost } from "../model/post_model";
+import Like from "../model/like_model";
+import Comment from "../model/comment_model";
 
 const router = Router();
 
@@ -10,17 +12,23 @@ router.get("/", authMiddleware, async (req: Request, res: Response) => {
     const userId = (req as any).userId;
 
     
-    const following = await Follow.find({ followerId: userId })
+    const followingDocs = await Follow.find({ followerId: userId })
       .select("followingId");
 
-    const followingIds = following.map(f => f.followingId);
+    const followingIds = followingDocs.map(
+      (doc) => doc.followingId
+    );
 
     
-    const followedPosts = await Post.find({
-      userId: { $in: followingIds },
-    })
-      .populate("userId", "username")
-      .sort({ createdAt: -1 });
+    let followedPosts: IPost[] = [];
+
+    if (followingIds.length > 0) {
+      followedPosts = await Post.find({
+        userId: { $in: followingIds },
+      })
+        .populate("userId", "username")
+        .sort({ createdAt: -1 });
+    }
 
     
     const otherPosts = await Post.find({
@@ -33,9 +41,48 @@ router.get("/", authMiddleware, async (req: Request, res: Response) => {
     
     const feed = [...followedPosts, ...otherPosts];
 
-    res.json({ posts: feed });
+    
+    const postIds = feed.map((post) => post._id);
+    
+    let likes: any[] = [];
+    let comments: any[] = [];
+    
+    if (postIds.length > 0) {
+      [likes, comments] = await Promise.all([
+        Like.find({ postId: { $in: postIds } }).select("userId postId"),
+        Comment.find({ postId: { $in: postIds } })
+          .populate("userId", "username")
+          .sort({ createdAt: 1 }),
+      ]);
+    }
+
+    
+    const feedWithDetails = feed.map((post) => {
+      const postLikes = likes
+        .filter((like) => like.postId.toString() === post._id.toString())
+        .map((like) => like.userId.toString());
+      
+      const postComments = comments
+        .filter((comment) => comment.postId.toString() === post._id.toString())
+        .map((comment) => ({
+          _id: comment._id.toString(),
+          text: comment.text,
+          userId: {
+            _id: (comment.userId as any)._id.toString(),
+            username: (comment.userId as any).username,
+          },
+        }));
+
+      return {
+        ...post.toObject(),
+        likes: postLikes,
+        comments: postComments,
+      };
+    });
+
+    res.json({ posts: feedWithDetails });
   } catch (error) {
-    console.error(error);
+    console.error("Feed error:", error);
     res.status(500).json({ message: "Failed to fetch feed" });
   }
 });
