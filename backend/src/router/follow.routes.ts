@@ -56,4 +56,24 @@ router.delete("/:userId", authMiddleware, async (req: Request, res: Response) =>
   }
 });
 
+/**
+ GET MY FOLLOWING LIST
+ */
+router.get("/my", authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const followerId = (req as any).userId;
+
+    const followingDocs = await Follow.find({ followerId })
+      .select("followingId");
+
+    const followingIds = followingDocs.map(
+      (doc) => doc.followingId.toString()
+    );
+
+    res.json({ followingIds });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch following list" });
+  }
+});
+
 export default router;
