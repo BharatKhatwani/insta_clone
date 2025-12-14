@@ -5,29 +5,37 @@ import Post from "../model/post_model";
 
 const router = Router();
 
-/**
- * GET FEED
- 
- */
 router.get("/", authMiddleware, async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
 
-
+    
     const following = await Follow.find({ followerId: userId })
       .select("followingId");
 
-    const followingIds = following.map((f) => f.followingId);
+    const followingIds = following.map(f => f.followingId);
 
-
-    const posts = await Post.find({
+    
+    const followedPosts = await Post.find({
       userId: { $in: followingIds },
     })
       .populate("userId", "username")
       .sort({ createdAt: -1 });
 
-    res.json({ posts });
+    
+    const otherPosts = await Post.find({
+      userId: { $nin: [...followingIds, userId] },
+    })
+      .populate("userId", "username")
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    
+    const feed = [...followedPosts, ...otherPosts];
+
+    res.json({ posts: feed });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Failed to fetch feed" });
   }
 });
