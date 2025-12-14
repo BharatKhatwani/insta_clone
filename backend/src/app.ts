@@ -1,32 +1,39 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
+
 import authRoutes from "./router/ auth.routes";
 import followRoutes from "./router/follow.routes";
 import postRoutes from "./router/post.route";
+import likeRoutes from "./router/like.route";
+import feedRoutes from "./router/feed.routes";
+import commentRoutes from "./router/comment.route";
+
 import { connectDB } from "./config/db";
-import LikeRoutes from "./router/like.route"
-import FeedRoutes from "./router/feed.routes"
-import CommentRoutes from './router/comment.route'
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// middleware
+
 app.use(express.json());
 
-// routes
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
+
 app.use("/api/auth", authRoutes);
 app.use("/api/follow", followRoutes);
 app.use("/api/posts", postRoutes);
-app.use("/api/posts",LikeRoutes )
-app.use('/api/feed', FeedRoutes)
-app.use('/api/comments', CommentRoutes)
-
-// app.get("/", (_req, res) => {
-//   res.send("Backend is running");
-// });
+app.use("/api/posts", likeRoutes);
+app.use("/api/feed", feedRoutes);
+app.use("/api/comments", commentRoutes);
 
 const startServer = async () => {
   try {
