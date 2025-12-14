@@ -312,7 +312,7 @@ const Home = () => {
                 >
                   <div className="flex items-center justify-between p-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                      <div className="w-12 h-12 rounded-full  flex items-center justify-center text-black font-bold text-lg shadow-md">
                         {post.userId.username.charAt(0).toUpperCase()}
                       </div>
                       <div>
