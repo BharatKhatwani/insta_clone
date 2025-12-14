@@ -4,6 +4,9 @@ import authRoutes from "./router/ auth.routes";
 import followRoutes from "./router/follow.routes";
 import postRoutes from "./router/post.route";
 import { connectDB } from "./config/db";
+import LikeRoutes from "./router/like.route"
+import FeedRoutes from "./router/feed.routes"
+import CommentRoutes from './router/comment.route'
 
 dotenv.config();
 
@@ -17,11 +20,13 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/follow", followRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/posts",LikeRoutes )
+app.use('/api/feed', FeedRoutes)
+app.use('/api/comments', CommentRoutes)
 
-// health check
-app.get("/", (_req, res) => {
-  res.send("Backend is running");
-});
+// app.get("/", (_req, res) => {
+//   res.send("Backend is running");
+// });
 
 const startServer = async () => {
   try {
