@@ -284,23 +284,8 @@ const Home = () => {
       )}
 
       <main className="max-w-2xl mx-auto px-4 py-8">
-        {posts.length === 0 ? (
-          <div className="bg-white rounded-3xl shadow-xl p-12 text-center border border-gray-100">
-            <div className="text-7xl mb-4">📸</div>
-            <h2 className="text-3xl font-bold text-gray-800 mb-3">No Posts Yet</h2>
-            <p className="text-gray-600 mb-8 text-lg">
-              Be the first to share something amazing!
-            </p>
-            <button
-              onClick={() => setShowCreatePost(true)}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-full hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold"
-            >
-              Create Your First Post
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-8">
-            {posts.map((post) => {
+        <div className="space-y-8">
+          {posts.map((post) => {
               const isFollowing = followingIds.includes(post.userId._id);
               const isSelf = post.userId._id === currentUserId;
               const isLiked = post.likes?.includes(currentUserId || "");
@@ -338,7 +323,7 @@ const Home = () => {
                         className={`px-5 py-2 rounded-full text-sm font-semibold transition-all shadow-md hover:shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
                           isFollowing
                             ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                            : "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700"
+                            : " text-black hover:from-purple-700 hover:to-pink-700"
                         }`}
                       >
                         {followLoading[post.userId._id] ? "..." : (isFollowing ? "Following" : "Follow")}
@@ -436,7 +421,7 @@ const Home = () => {
                       <button
                         onClick={() => addComment(post._id)}
                         disabled={!commentTexts[post._id]?.trim()}
-                        className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-5 py-2.5 rounded-full font-semibold text-sm hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg transform hover:scale-105 disabled:transform-none"
+                        className=" text-black px-5 py-2.5 rounded-full font-semibold text-sm hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg transform hover:scale-105 disabled:transform-none"
                       >
                         Post
                       </button>
@@ -445,8 +430,7 @@ const Home = () => {
                 </article>
               );
             })}
-          </div>
-        )}
+        </div>
       </main>
     </div>
   );
