@@ -19,7 +19,7 @@ const PostSchema = new Schema<IPost>(
     },
     caption: {
       type: String,
-      required: true,
+     
     },
   },
   {
